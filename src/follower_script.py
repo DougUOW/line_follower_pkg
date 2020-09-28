@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
-
-#This Program is tested on Gazebo Simulator
-#This script uses the cv_bridge package to convert images coming on the topic
-#sensor_msgs/Image to OpenCV messages and then convert their colors from RGB to HSV
-#then apply a threshold for hues near the color yellow to obtain the binary image
-#to be able to see only the yellow line and then follow that line
-#It uses an approach called proportional and simply means
+#This program is to be used with line_follower_pkg and yellow_line.world. Once yellow_line.world
+# #is up and runnin and this program is launched, the turtlebot will begin to follow the yellow line
+#in the gazebo world. 
+#Please note; not happting with the whole shutdown process, in particular the use of 'gloal ctrl_c'
 
 import roslib
 import sys
@@ -16,6 +13,8 @@ import numpy
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
 from cv_bridge import CvBridge, CvBridgeError
+
+ctrl_c = False
 
 class LineFollower:
 
@@ -29,6 +28,7 @@ class LineFollower:
                 self.twist_object = Twist()
 
         def clean_up(self):
+                #this function runs upon shutdown.
                 cv2.destroyAllWindows()
                 rospy.loginfo("Unregistering Camera Subscriber")
                 self.image_sub.unregister()
@@ -42,9 +42,7 @@ class LineFollower:
                 rospy.loginfo("Unregistering cmd_vel Publisher")
                 self.cmd_vel_pub.unregister()
                 rospy.loginfo("Wait 1 second")
-                rospy.sleep(1)
-                #cv2.destroyAllWindows()
-                
+                rospy.sleep(1)               
 
         def camera_callback(self, data):
 
@@ -81,7 +79,7 @@ class LineFollower:
                 except ZeroDivisionError:
                         cx = width/2
                         cy = height/2
-                
+                #Draw circle on image to indicate detected centroid
                 cv2.circle(res, (int(cx), int(cy)), 10,(0,0,255), -1)
 
                 #Open a GUI, where you can see the contents of each image
@@ -100,6 +98,7 @@ class LineFollower:
 
 def main():
 
+        global ctrl_c
         rospy.init_node('line_following_node', anonymous=True)
         line_follower_object = LineFollower()
 
@@ -107,6 +106,7 @@ def main():
         ctrl_c = False
 
         def shutdownhook():
+                global ctrl_c
                 rospy.loginfo("Initiating ShutDown")
                 line_follower_object.clean_up()                
                 rospy.loginfo("ShutdownTime!")
