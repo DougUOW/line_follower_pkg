@@ -1,0 +1,7 @@
+
+<launch>
+	<node pkg="line_follower_pkg" type="video_lane_detection.py" name="image_lane_detection_node" output="screen">
+		<param name="initial_pose" value="100" />	
+	</node>
+
+</launch>

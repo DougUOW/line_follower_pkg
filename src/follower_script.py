@@ -10,7 +10,7 @@ import sys
 import rospy
 import cv2
 import numpy
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 from geometry_msgs.msg import Twist
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -47,7 +47,7 @@ class LineFollower:
         def camera_callback(self, data):
 
                 try:
-                        cv_image = self.bridge_object.imgmsg_to_cv2(data,desired_encoding="bgr8")
+			cv_image = self.bridge_object.compressed_imgmsg_to_cv2(data, desired_encoding="passthrough")
                 except CvBridgeError as e:
                         print(e)
 

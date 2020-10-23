@@ -1,0 +1,7 @@
+
+<launch>
+	<node pkg="line_follower_pkg" type="hardware_follower_script.py" name="line_follower" output="screen">
+		<param name="initial_pose" value="100" />	
+	</node>
+
+</launch>
